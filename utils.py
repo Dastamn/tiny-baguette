@@ -74,16 +74,16 @@ def load_checkpoint(model: nn.Module, optimizer: Optimizer, lr: float, filename:
         checkpoint = torch.load(filename, map_location=config.DEVICE)
     except:
         print('No checkpoint found.')
-        return 1
+        return None
     model.load_state_dict(checkpoint['state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer'])
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
     print('Done.')
-    return checkpoint['epoch']
+    return checkpoint
 
 
-def save_checkpoint(model: nn.Module, optimizer: Optimizer, epoch: int, filename: str = 'model.pt', dir: str = 'checkpoint'):
+def save_checkpoint(model: nn.Module, optimizer: Optimizer, epoch: int, filename: str = 'model.pt', dir: str = 'checkpoint', **kwargs):
     if dir:
         check_dir(dir)
         filename = os.path.join(dir, filename)
@@ -91,7 +91,8 @@ def save_checkpoint(model: nn.Module, optimizer: Optimizer, epoch: int, filename
     checkpoint = {
         'state_dict': model.state_dict(),
         'optimizer': optimizer.state_dict(),
-        'epoch': epoch
+        'epoch': epoch,
+        **kwargs
     }
     torch.save(checkpoint, filename)
     print('Done.')

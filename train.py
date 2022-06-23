@@ -52,8 +52,8 @@ def train(args: argparse.Namespace):
     pad_idx = en.vocab.stoi['<pad>']
     criterion = nn.CrossEntropyLoss(ignore_index=pad_idx)
 
-    last_epoch = load_checkpoint(
-        model, optimizer, args.lr) if args.resume else 0
+    checkpoint = load_checkpoint(model, optimizer, args.lr)
+    last_epoch = checkpoint['epoch'] if checkpoint and args.resume else 0
 
     assert last_epoch < args.epochs
     for epoch in range(last_epoch+1, args.epochs+1):
@@ -82,7 +82,8 @@ def train(args: argparse.Namespace):
             bleu = bleu_score(val_data[1:], model, en_tokenizer, en, fr)
             print(f'Bleu score: {bleu}')
         if args.save:
-            save_checkpoint(model, optimizer, epoch)
+            save_checkpoint(model, optimizer, epoch, src_vocab=len(
+                en.vocab), tar_vocab=len(fr.vocab), bleu=bleu)
 
 
 if __name__ == '__main__':
