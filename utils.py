@@ -1,6 +1,6 @@
-from tqdm import tqdm
 import argparse
 import os
+import re
 from typing import List, Tuple, Union
 
 import pandas as pd
@@ -10,6 +10,7 @@ import torch.nn as nn
 from torch.optim import Optimizer
 from torchtext.data.metrics import bleu_score as bleu
 from torchtext.legacy.data import Field, TabularDataset
+from tqdm import tqdm
 
 import config
 from model import Seq2Seq
@@ -20,7 +21,7 @@ def tokenize(text: Union[str, List[str]], tokenizer: spacy.Language) -> List[str
         else [t.lower() for t in text]
 
 
-def translate(model: Seq2Seq, sentence: str, src_tokenizer: spacy.Language, src_field: Field, tar_field: Field, as_str: bool = False, tar_tokenizer: spacy.Language = None):
+def translate(model: Seq2Seq, sentence: str, src_tokenizer: spacy.Language, src_field: Field, tar_field: Field, as_str: bool = False, max_len: int = 80) -> Union[str, List[str]]:
     tokens = tokenize(sentence, src_tokenizer)
     tokens = [src_field.init_token, *tokens, tar_field.eos_token]
     idx = [src_field.vocab.stoi[token] for token in tokens]
@@ -28,8 +29,8 @@ def translate(model: Seq2Seq, sentence: str, src_tokenizer: spacy.Language, src_
     with torch.no_grad():
         hidden, cell = model.encoder(x)
     # prediction
-    preds = [tar_field.vocab.stoi["<sos>"]]
-    for _ in range(1, len(idx)-1):
+    preds = [tar_field.vocab.stoi['<sos>']]
+    for _ in range(1, max(len(idx)-1, max_len+1)):
         pred = torch.LongTensor([preds[-1]]).to(config.DEVICE)
         with torch.no_grad():
             output, (hidden, cell) = model.decoder(pred, hidden, cell)
@@ -42,13 +43,18 @@ def translate(model: Seq2Seq, sentence: str, src_tokenizer: spacy.Language, src_
                   for idx in preds][1:]  # remove start token
     if translated[-1] == '<eos>':
         translated = translated[:-1]  # remove end token
-    if as_str and tar_tokenizer:
-        doc = spacy.tokens.Doc(tar_tokenizer.vocab, translated)
-        translated = ''.join([token.text_with_ws for token in doc])
+    if as_str:
+        translated = prettify_fr(' '.join(translated))
     return translated
 
 
-def bleu_score(data: TabularDataset, model: Seq2Seq, src_tokenizer: spacy.Language, src_field: Field, tar_field: Field):
+def prettify_fr(text: str) -> str:
+    out = re.sub(r' *([?!.,;:]) *', r'\1 ', text)
+    out = re.sub(r' *([\'-]) *', r'\1', out)
+    return out.rstrip()
+
+
+def bleu_score(data: TabularDataset, model: Seq2Seq, src_tokenizer: spacy.Language, src_field: Field, tar_field: Field) -> float:
     translations = [(translate(model, datum.src, src_tokenizer, src_field,
                      tar_field), [datum.tar]) for datum in tqdm(data)]
     return bleu(*list(zip(*translations)))

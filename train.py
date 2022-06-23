@@ -74,14 +74,15 @@ def train(args: argparse.Namespace):
             optimizer.step()
         # eval
         model.eval()
-        translated = translate(model, args.evalsen, en_tokenizer,
-                               en, fr, as_str=True, tar_tokenizer=fr_tokenizer)
+        translated = translate(model, args.evalsen,
+                               en_tokenizer, en, fr, as_str=True)
         print(f'Sentence: {args.evalsen}\nTranslation: {translated}')
         if epoch % 5 == 0:
             print('Computing bleu score...')
             bleu = bleu_score(val_data[1:], model, en_tokenizer, en, fr)
             print(f'Bleu score: {bleu}')
-        save_checkpoint(model, optimizer, epoch)
+        if args.save:
+            save_checkpoint(model, optimizer, epoch)
 
 
 if __name__ == '__main__':
@@ -102,6 +103,10 @@ if __name__ == '__main__':
     parser.add_argument('--batchsize', type=int, default=config.BATCH_SIZE)
     parser.add_argument('--resume', action='store_true',
                         help='resume from checkpoint')
+    parser.add_argument('--save', action='store_true',
+                        help='save model at each epoch')
+    parser.add_argument('--model', type=str, default='model.pt',
+                        help='model name')
     parser.add_argument('--evalsen', type=str,
                         default='A man in a blue shirt is standing on a ladder cleaning a window.')
     args = parser.parse_args()
