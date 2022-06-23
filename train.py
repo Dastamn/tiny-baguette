@@ -29,12 +29,12 @@ def train(args: argparse.Namespace):
 
     # vocab
     print('Building vocabulary...')
-    en.build_vocab(train_data, min_freq=2)
-    fr.build_vocab(train_data, min_freq=2)
+    en.build_vocab(train_data)
+    fr.build_vocab(train_data)
     print('Done.')
 
     # iterator
-    train_iter = BucketIterator.splits(
+    train_iter = BucketIterator(
         train_data,
         batch_size=config.BATCH_SIZE,
         sort_within_batch=True,
@@ -56,7 +56,7 @@ def train(args: argparse.Namespace):
         model, optimizer, args.lr) if args.resume else 0
 
     assert last_epoch < args.epochs
-    for epoch in range(last_epoch+1, args.epochs):
+    for epoch in range(last_epoch+1, args.epochs+1):
         print(f'Epoch {epoch}')
         model.train()
         for batch in tqdm(train_iter):
@@ -77,9 +77,10 @@ def train(args: argparse.Namespace):
         translated = translate(model, args.evalsen, en_tokenizer,
                                en, fr, as_str=True, tar_tokenizer=fr_tokenizer)
         print(f'Sentence: {args.evalsen}\nTranslation: {translated}')
-        print('Computing bleu score...')
-        bleu = bleu_score(val_data[1:], model, en_tokenizer, en, fr)
-        print(f'Bleu score: {bleu}')
+        if epoch % 5 == 0:
+            print('Computing bleu score...')
+            bleu = bleu_score(val_data[1:], model, en_tokenizer, en, fr)
+            print(f'Bleu score: {bleu}')
         save_checkpoint(model, optimizer, epoch)
 
 
