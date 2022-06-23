@@ -83,7 +83,7 @@ def train(args: argparse.Namespace):
             print(f'Bleu score: {bleu}')
         if args.save:
             save_checkpoint(model, optimizer, epoch, src_vocab=len(
-                en.vocab), tar_vocab=len(fr.vocab), bleu=bleu)
+                en.vocab), tar_vocab=len(fr.vocab))
 
 
 if __name__ == '__main__':
