@@ -106,8 +106,6 @@ if __name__ == '__main__':
                         help='resume from checkpoint')
     parser.add_argument('--save', action='store_true',
                         help='save model at each epoch')
-    parser.add_argument('--model', type=str, default='model.pt',
-                        help='model name')
     parser.add_argument('--evalsen', type=str,
                         default='A man in a blue shirt is standing on a ladder cleaning a window.')
     args = parser.parse_args()
