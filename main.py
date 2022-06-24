@@ -50,7 +50,7 @@ def train(args: argparse.Namespace):
 
     train_iter = BucketIterator(
         train_data,
-        batch_size=config.BATCH_SIZE,
+        batch_size=args.batchsize,
         sort_within_batch=True,
         sort_key=lambda x: len(x.src),  # minimize padding
         device=config.DEVICE)
