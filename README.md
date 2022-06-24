@@ -2,7 +2,7 @@
 
 A simple French-to-English translator using [Sequence to Sequence Learning](https://arxiv.org/pdf/1409.3215.pdf) trained on the [Multi30k dataset](https://github.com/multi30k/dataset).
 
-Achieved a [BLEU](https://en.wikipedia.org/wiki/BLEU) score of 21% on validation data with default hyperparameters and 25 epochs.
+Achieved a [BLEU](https://en.wikipedia.org/wiki/BLEU) score of 22.7% on validation data with default hyperparameters and 25 epochs.
 
 ## Requirements
 
