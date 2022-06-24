@@ -33,6 +33,6 @@ This command will output a `translations.csv` file containing the generated sent
 | English                                                                | French Translation                                                            |
 | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | Low angle view of people suspended from the swings of a carnival ride. | Une vue aérienne de gens attendant sur le lieux d'une grande structure.       |
-| man dressed in black crosses the street screaming.                     | Un homme habillé en noir courant dans la rue                                  |
+| man dressed in black crosses the street screaming.                     | Un homme habillé en noir courant dans la rue.                                 |
 | A man is riding a bike with a child.                                   | Un homme escalade du vélo avec un enfant.                                     |
 | A man in a yellow biking shirt and sunglasses walks along a street.    | Un homme avec un t-shirt blanc et des lunettes de soleil marche dans une rue. |
