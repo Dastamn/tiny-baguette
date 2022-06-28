@@ -1,4 +1,4 @@
-# Tiny Baguette
+# Tiny Baguette 🥖
 
 A simple French-to-English translator using [Sequence to Sequence Learning](https://arxiv.org/pdf/1409.3215.pdf) trained on the [Multi30k dataset](https://github.com/multi30k/dataset).
 
